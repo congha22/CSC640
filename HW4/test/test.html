@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>API Test</title>
+</head>
+<body>
+<h1>REST API Test</h1>
+
+<button id="register">Register User</button>
+<button id="login">Login User</button>
+<button id="getItems">Get Items</button>
+<button id="createItem">Create Item</button>
+
+<pre id="output"></pre>
+
+<script>
+const BASE_URL = 'http://localhost:8000/api';
+let token = '';
+
+function showResult(data) {
+  document.getElementById('output').textContent = JSON.stringify(data, null, 2);
+}
+
+document.getElementById('register').addEventListener('click', async () => {
+  const res = await fetch(`${BASE_URL}/auth/register`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({name:'Alice', email:'alice@example.com', password:'secret123'})
+  });
+  const data = await res.json();
+  showResult(data);
+});
+
+document.getElementById('login').addEventListener('click', async () => {
+  const res = await fetch(`${BASE_URL}/auth/login`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({email:'alice@example.com', password:'secret123'})
+  });
+  const data = await res.json();
+  token = data.token;
+  showResult(data);
+});
+
+document.getElementById('getItems').addEventListener('click', async () => {
+  const res = await fetch(`${BASE_URL}/items`);
+  const data = await res.json();
+  showResult(data);
+});
+
+document.getElementById('createItem').addEventListener('click', async () => {
+  const res = await fetch(`${BASE_URL}/items`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token},
+    body: JSON.stringify({name:'Item A', description:'Sample item'})
+  });
+  const data = await res.json();
+  showResult(data);
+});
+</script>
+</body>
+</html>
